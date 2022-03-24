@@ -12,12 +12,14 @@ services:
     container_name: php
     volumes:
       - web:/var/www
-      - php-config:/usr/local/etc/php/conf.d/
+      - $PWD/docker/php/config/php-config.ini:/usr/local/etc/php/conf.d/php-config.ini
     depends_on:
       - mysql
     working_dir: /var/www
     networks:
       - dev_env
+    ports:
+      - '9000:80'
   nginx:
     image: nginx
     container_name: nginx
@@ -61,7 +63,6 @@ services:
 
 volumes:
   web:
-  php-config:
   nginx-conf:
   mysql:
 
@@ -83,9 +84,6 @@ x-mutagen:
         paths:
           - "vendor"
           - "var"
-    php-config:
-      alpha: "./docker/php/config"
-      beta: "volume://php-config"
     nginx-conf:
       alpha: "./docker/nginx"
       beta: "volume://nginx-conf"
