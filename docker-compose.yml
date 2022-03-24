@@ -1,9 +1,8 @@
 version: '3.7'
 
 networks:
-  default:
-    external:
-      name: dev_env
+  dev_env:
+    external: true
 
 services:
   php:
@@ -17,6 +16,8 @@ services:
     depends_on:
       - mysql
     working_dir: /var/www
+    networks:
+      - dev_env
   nginx:
     image: nginx
     container_name: nginx
@@ -27,6 +28,8 @@ services:
       - '5010:80'
     depends_on:
       - php
+    networks:
+      - dev_env
   mysql:
     image: mysql
     container_name: mysql
@@ -42,6 +45,8 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - mysql:/var/lib/mysql/
+    networks:
+      - dev_env
   encore:
     container_name: encore
     volumes:
@@ -51,9 +56,10 @@ services:
       dockerfile: Dockerfile
     working_dir: /usr/src/app/
     command: ["yarn", "run", "dev"]
+    networks:
+      - dev_env
 
 volumes:
-  code:
   web:
   php-config:
   nginx-conf:
@@ -80,9 +86,9 @@ x-mutagen:
     php-config:
       alpha: "./docker/php/config"
       beta: "volume://php-config"
-    nginx-config:
+    nginx-conf:
       alpha: "./docker/nginx"
-      beta: "volume://nginx-config"
+      beta: "volume://nginx-conf"
     mysql:
       alpha: "./database"
       beta: "volume://mysql"
